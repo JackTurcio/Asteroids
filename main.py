@@ -14,16 +14,22 @@ def main():
     clock = pygame.time.Clock()
     dt = 0.0
     #=== clock and tick values ===
+    updatable = pygame.sprite.Group() #creates update group
+    drawable = pygame.sprite.Group() #creates draw group
+    Player.containers = (updatable, drawable) # sets 'Player' to be within both groups; MUST BE DONE BEFORE THE OTHER STUF!
     player = Player(SCREEN_WIDTH/2 , SCREEN_HEIGHT/2)
     player.draw(screen)
+    
+    #=== Groups ===
     while True:
         log_state()
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 return
-        player.update(dt)
+        updatable.update(dt)
         screen.fill("black")
-        player.draw(screen)
+        for drawing in drawable:
+            drawing.draw(screen)
         pygame.display.flip()
         dt = clock.tick(60)
 
