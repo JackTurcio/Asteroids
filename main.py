@@ -7,6 +7,7 @@ from asteroid import Asteroid
 from astroidfield import AsteroidField
 from logger import log_event
 import sys 
+from shot import Shot
 
 def main():
     pygame.init()
@@ -21,9 +22,11 @@ def main():
     updatable = pygame.sprite.Group() #creates update group
     drawable = pygame.sprite.Group() #creates draw group
     asteroids = pygame.sprite.Group() #creates asteroid group
+    shots = pygame.sprite.Group() #creates shooting group
     Player.containers = (updatable, drawable) # sets 'Player' to be within both groups; MUST BE DONE BEFORE THE OTHER STUF!
     Asteroid.containers = (asteroids, drawable, updatable) 
     AsteroidField.containers = (updatable)
+    Shot.containers = (shots, drawable, updatable)
     #=== Groups ===
     player = Player(SCREEN_WIDTH/2 , SCREEN_HEIGHT/2)
     field = AsteroidField()
@@ -34,16 +37,21 @@ def main():
             if event.type == pygame.QUIT:
                 return
         updatable.update(dt)
+        screen.fill("black")
+        for drawing in drawable:
+            drawing.draw(screen)
+        pygame.display.flip()
         for rock in asteroids:
             if rock.collides_with(player) == True:
                 log_event("player_hit")
                 print('Game over!')
                 sys.exit()
         # Checks to see if any astroids collide w/ player
-        screen.fill("black")
-        for drawing in drawable:
-            drawing.draw(screen)
-        pygame.display.flip()
+            for atvshot in shots:
+                if atvshot.collides_with(rock) == True:
+                    log_event("asteroid_shot")
+                    atvshot.kill()
+                    rock.split()
         dt = clock.tick(60)
 
 
